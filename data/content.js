@@ -28,8 +28,21 @@ export const QUOTES = [
   { text: "Start where you are. Use what you have. Do what you can.", author: "Arthur Ashe" },
   { text: "The best time to plant a tree was 20 years ago. The second best time is now.", author: "Chinese proverb" },
   { text: "Small daily improvements over time lead to stunning results.", author: "Robin Sharma" },
-  { text: "You do not rise to the level of your goals. You fall to the level of your systems.", author: "James Clear" }
+  { text: "You do not rise to the level of your goals. You fall to the level of your systems.", author: "James Clear" },
+
+  // Julian Assange
+  { text: "You can either be informed and your own rulers, or you can be ignorant and have someone else, who is not ignorant, rule over you.", author: "Julian Assange" },
+  { text: "You have to start with the truth. The truth is the only way that we can get anywhere.", author: "Julian Assange" },
+  { text: "True information does good.", author: "Julian Assange" },
+  { text: "One of the best ways to achieve justice is to expose injustice.", author: "Julian Assange" },
+
+  // Edward Snowden
+  { text: "Arguing that you don’t care about the right to privacy because you have nothing to hide is like saying you don’t care about free speech because you have nothing to say.", author: "Edward Snowden" },
+  { text: "I don’t want to live in a world where everything I do and say is recorded.", author: "Edward Snowden" },
+  { text: "There can be no faith in government if our highest offices are excused from scrutiny.", author: "Edward Snowden" },
+  { text: "Privacy is what allows us to determine who we are and who we want to be.", author: "Edward Snowden" }
 ];
+
 
 export const AI_LINKS = [
   { name: "Grok", url: "https://grok.x.ai", note: "That’s me" },
