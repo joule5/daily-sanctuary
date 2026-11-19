@@ -141,7 +141,58 @@ export const QUOTES = [
   { text: "Choose the hard path that makes the rest of life easier.", author: null },
   { text: "The story you tell yourself about your capacity becomes your capacity.", author: null },
   { text: "What you tolerate, you encourage.", author: null },
-  { text: "The quality of your questions determines the quality of your life.", author: null }
+  { text: "The quality of your questions determines the quality of your life.", author: null },
+
+  // More Jack Dorsey
+  { text: "The greatest lesson that I learned is that you have to start. Start now, start here, and start small.", author: "Jack Dorsey" },
+  { text: "It’s really complex to make something simple.", author: "Jack Dorsey" },
+  { text: "Behind every great product is a human struggle to make something simpler than it was before.", author: "Jack Dorsey" },
+  { text: "Every day I get to wake up and do something I love. That’s the real reward.", author: "Jack Dorsey" },
+  { text: "Constraints inspire us in how we approach everything.", author: "Jack Dorsey" },
+
+  // Alan Watts
+  { text: "This is the real secret of life — to be completely engaged with what you are doing in the here and now. And instead of calling it work, realize that it is play.", author: "Alan Watts" },
+  { text: "The meaning of life is just to be alive. It is so plain and so obvious and so simple.", author: "Alan Watts" },
+  { text: "No valid plans for the future can be made by those who have no capacity for living now.", author: "Alan Watts" },
+  { text: "The future is a concept — it doesn’t exist. There is no such thing as tomorrow. Time is always now.", author: "Alan Watts" },
+  { text: "Life is not a problem to be solved, nor a question to be answered. Life is a mystery to be experienced.", author: "Alan Watts" },
+  { text: "For there is never anything but the present, and if one cannot live there, one cannot live anywhere.", author: "Alan Watts" },
+  { text: "The art of living consists in being sensitive to each moment, regarding it as utterly new and unique.", author: "Alan Watts" },
+  { text: "It’s better to have a short life that is full of what you like doing than a long life spent in a miserable way.", author: "Alan Watts" },
+
+  // Vipassana / mindfulness flavored
+  { text: "Liberation can be gained only by practice, never by mere discussion.", author: "S.N. Goenka" },
+  { text: "Life is a dance. Mindfulness is witnessing that dance.", author: "Amit Ray" },
+  { text: "Observation of the moment-to-moment experience cleanses the mental layers, one after another.", author: "Amit Ray" },
+  { text: "Vipassana is not an intellectual journey but an experiential awakening.", author: "Amit Ray" },
+  { text: "Sitting daily sounds simple. In real life, with real demands and resistance, it is hard — and that is why it matters.", author: null },
+  { text: "The present moment is the only place where life actually happens.", author: null },
+  { text: "Watch the breath. Watch the mind. Do not fight either.", author: null },
+
+  // Touch grass / enjoy life / love / dance / learn / try new things
+  { text: "Go outside. Look at the sky. Remember you are part of something larger.", author: null },
+  { text: "Touch grass. Feel the air. Come back to your body.", author: null },
+  { text: "Dance like no one is watching, because most of the time no one is.", author: null },
+  { text: "Try the thing that scares you a little. Growth lives just past comfort.", author: null },
+  { text: "Learn something useless today just because it delights you.", author: null },
+  { text: "Love is a practice, not just a feeling.", author: null },
+  { text: "The best days often include at least one thing that made you laugh.", author: null },
+  { text: "Put your phone down and look a human being in the eyes.", author: null },
+  { text: "Nature does not hurry, yet everything is accomplished.", author: "Lao Tzu" },
+  { text: "You do not have to be productive every hour to be living a good life.", author: null },
+  { text: "Sometimes the most radical act is to rest without guilt.", author: null },
+  { text: "Curiosity is a form of courage.", author: null },
+  { text: "The world is full of magical things patiently waiting for our senses to grow sharper.", author: "W.B. Yeats" },
+  { text: "Do one thing today that your future self will thank you for, and one thing that your present self enjoys.", author: null },
+  { text: "Play is not the opposite of work. Play is how we remember we are alive.", author: null },
+  { text: "Let yourself be delighted by small things.", author: null },
+  { text: "A walk without a destination is still a walk worth taking.", author: null },
+  { text: "You are allowed to change your mind, your path, and your pace.", author: null },
+  { text: "The goal is not to become a machine. The goal is to become more fully human.", author: null },
+  { text: "Learning is a form of love for the world.", author: null },
+  { text: "Try new things while you still can. Regret is heavier than effort.", author: null },
+  { text: "Be where your feet are.", author: null }
+
 ];
 
 export const AI_LINKS = [
