@@ -2,36 +2,34 @@
 
 A quiet, local daily place for reflection, small habits, and continuing.
 
-## What is here
+## Features
 
-- A nature scene that changes each day (different types: forest, beach, park, mountain, lake, desert)
-- A short quote oriented toward agency, learning, and keeping going
-- A simple meditation timer (5 / 10 / 15 min)
-- A few self-care checkboxes that reset each day
-- A private reflection box (only stored on your device)
-- An “Ask an AI” menu with links to Grok, Maple AI, Duck.ai, Gemini, Claude, and ChatGPT
+- Nature scene that changes each day
+- Daily quote (mix of original + real human quotes)
+- Meditation timer
+- **Habit stack** — fully editable by you (add / remove items)
+- Private daily reflection
+- **Look back** — scroll through past reflections
+- Ask an AI menu (Grok, Maple, Duck.ai, Gemini, Claude, ChatGPT)
 
 ## Privacy
 
-- Most of the app is fully local (IndexedDB)
-- No account, no analytics, no tracking
-- The AI links intentionally leave the local space and open other services
-- “Wipe all data” clears everything stored on the device
+- Almost everything stays on your device (IndexedDB)
+- No account, no analytics
+- AI links intentionally leave the local space
 
 ## Expanding later
 
-Scenes, quotes, and AI links all live in `data/content.js`.  
-Adding more is just appending to those arrays.
+Scenes and quotes live in `data/content.js`.  
+Just append new items to the arrays.
 
-## Run it
+## Run
 
-No build step.
+No build step. Any static host or:
 
 ```bash
 python3 -m http.server 8080
 ```
-
-Or host on any static host / GitHub Pages.
 
 ## License
 

@@ -1,37 +1,45 @@
 /**
- * Daily Sanctuary
- * A quiet local place for reflection, small habits, and continuing.
+ * Daily Sanctuary — improved version
+ * Habit stack, Look Back, stronger scenes, expanded quotes.
  */
 
 import * as db from "./db.js";
-import { SCENES, QUOTES, AI_LINKS, DEFAULT_CHECKBOXES } from "../data/content.js";
+import { SCENES, QUOTES, AI_LINKS, DEFAULT_HABITS } from "../data/content.js";
 
 const STATE_KEY = "state";
 
 let state = {
-  checkboxes: [...DEFAULT_CHECKBOXES],
+  habits: [...DEFAULT_HABITS],
   checked: {},
   reflection: "",
+  history: [],       // { date, text }
   lastDate: null
 };
 
+let view = "home";   // "home" | "history" | "edit-habits"
 let timerSeconds = 0;
 let timerInterval = null;
 let timerRunning = false;
 
 const app = document.getElementById("app");
 
-// ---------- Boot ----------
-
 async function load() {
   const saved = await db.get(STATE_KEY);
-  if (saved) {
-    state = { ...state, ...saved };
-  }
-  // Reset daily checkboxes if the day changed
+  if (saved) state = { ...state, ...saved };
+
   const today = localDate();
   if (state.lastDate !== today) {
+    // New day: save yesterday's reflection into history if it exists, then reset
+    if (state.lastDate && state.reflection.trim()) {
+      state.history.unshift({
+        date: state.lastDate,
+        text: state.reflection.trim()
+      });
+      // Keep last 90 days
+      if (state.history.length > 90) state.history = state.history.slice(0, 90);
+    }
     state.checked = {};
+    state.reflection = "";
     state.lastDate = today;
     await save();
   }
@@ -47,19 +55,20 @@ function localDate() {
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
 }
 
-// ---------- Deterministic daily picks ----------
-
 function dayIndex(len) {
-  // Stable index based on date so the same day always shows the same scene/quote
   const d = localDate();
   let hash = 0;
   for (let i = 0; i < d.length; i++) hash = (hash * 31 + d.charCodeAt(i)) >>> 0;
   return hash % len;
 }
 
-// ---------- Render ----------
-
 function render() {
+  if (view === "history") return renderHistory();
+  if (view === "edit-habits") return renderEditHabits();
+  renderHome();
+}
+
+function renderHome() {
   const scene = SCENES[dayIndex(SCENES.length)];
   const quote = QUOTES[dayIndex(QUOTES.length)];
 
@@ -71,6 +80,7 @@ function render() {
 
     <div class="content">
       <p class="quote">“${escape(quote.text)}”</p>
+      ${quote.author ? `<p class="quote-author">— ${escape(quote.author)}</p>` : `<p class="quote-author" style="margin-bottom:1.4rem"></p>`}
 
       <!-- Meditation -->
       <div class="section">
@@ -84,14 +94,17 @@ function render() {
         </div>
       </div>
 
-      <!-- Self-care -->
+      <!-- Habit stack -->
       <div class="section">
-        <div class="section-title">Today’s small cares</div>
-        <ul class="check-list" id="checks">
-          ${state.checkboxes.map((label, i) => `
+        <div class="section-title">
+          <span>Habit stack</span>
+          <button class="btn btn-ghost" id="edit-habits" style="padding:0.25rem 0.6rem;font-size:0.8rem">Edit</button>
+        </div>
+        <ul class="habit-list" id="habits">
+          ${state.habits.map((label, i) => `
             <li>
-              <input type="checkbox" id="c${i}" ${state.checked[i] ? "checked" : ""} />
-              <label for="c${i}" class="${state.checked[i] ? "done" : ""}">${escape(label)}</label>
+              <input type="checkbox" id="h${i}" ${state.checked[i] ? "checked" : ""} />
+              <label class="label ${state.checked[i] ? "done" : ""}" for="h${i}">${escape(label)}</label>
             </li>
           `).join("")}
         </ul>
@@ -99,7 +112,10 @@ function render() {
 
       <!-- Reflection -->
       <div class="section">
-        <div class="section-title">A few words (only you see this)</div>
+        <div class="section-title">
+          <span>A few words (only you see this)</span>
+          <button class="btn btn-ghost" id="look-back" style="padding:0.25rem 0.6rem;font-size:0.8rem">Look back</button>
+        </div>
         <textarea id="reflection" placeholder="What are you carrying, learning, or noticing…">${escape(state.reflection)}</textarea>
         <div class="btn-row">
           <button class="btn btn-ghost" id="save-reflection">Save</button>
@@ -133,7 +149,11 @@ function render() {
     </div>
   `;
 
-  // Timer buttons
+  bindHomeEvents();
+}
+
+function bindHomeEvents() {
+  // Timer
   document.querySelectorAll("[data-min]").forEach(btn => {
     btn.onclick = () => {
       stopTimer();
@@ -143,16 +163,21 @@ function render() {
   });
   document.getElementById("timer-toggle").onclick = toggleTimer;
 
-  // Checkboxes
-  state.checkboxes.forEach((_, i) => {
-    const el = document.getElementById(`c${i}`);
+  // Habits
+  state.habits.forEach((_, i) => {
+    const el = document.getElementById(`h${i}`);
+    if (!el) return;
     el.onchange = async () => {
       state.checked[i] = el.checked;
       await save();
-      // Update label style without full re-render
       el.nextElementSibling.classList.toggle("done", el.checked);
     };
   });
+
+  document.getElementById("edit-habits").onclick = () => {
+    view = "edit-habits";
+    render();
+  };
 
   // Reflection
   document.getElementById("save-reflection").onclick = async () => {
@@ -160,23 +185,33 @@ function render() {
     await save();
     const btn = document.getElementById("save-reflection");
     btn.textContent = "Saved";
-    setTimeout(() => { btn.textContent = "Save"; }, 1200);
+    setTimeout(() => { if (btn) btn.textContent = "Save"; }, 1200);
   };
 
-  // AI dropdown
+  document.getElementById("look-back").onclick = () => {
+    view = "history";
+    render();
+  };
+
+  // AI menu
   const toggle = document.getElementById("ai-toggle");
   const menu = document.getElementById("ai-menu");
-  toggle.onclick = () => menu.classList.toggle("open");
-  document.addEventListener("click", (e) => {
-    if (!toggle.contains(e.target) && !menu.contains(e.target)) {
-      menu.classList.remove("open");
-    }
-  });
+  toggle.onclick = (e) => {
+    e.stopPropagation();
+    menu.classList.toggle("open");
+  };
+  document.addEventListener("click", closeAiMenu);
 
   // Wipe
   document.getElementById("wipe").onclick = async () => {
-    if (!confirm("Erase all checkboxes, reflection, and local data on this device?")) return;
-    state = { checkboxes: [...DEFAULT_CHECKBOXES], checked: {}, reflection: "", lastDate: null };
+    if (!confirm("Erase all habits, reflections, and local data on this device?")) return;
+    state = {
+      habits: [...DEFAULT_HABITS],
+      checked: {},
+      reflection: "",
+      history: [],
+      lastDate: null
+    };
     stopTimer();
     timerSeconds = 0;
     await db.clearAll();
@@ -184,7 +219,104 @@ function render() {
   };
 }
 
-// ---------- Timer ----------
+function closeAiMenu(e) {
+  const toggle = document.getElementById("ai-toggle");
+  const menu = document.getElementById("ai-menu");
+  if (!toggle || !menu) return;
+  if (!toggle.contains(e.target) && !menu.contains(e.target)) {
+    menu.classList.remove("open");
+  }
+}
+
+// ---------- Look Back ----------
+
+function renderHistory() {
+  const items = state.history.length
+    ? state.history.map(h => `
+        <li class="history-item">
+          <div class="history-date">${formatDisplayDate(h.date)}</div>
+          <div class="history-text">${escape(h.text)}</div>
+        </li>
+      `).join("")
+    : `<p class="empty">No past reflections yet. They will appear here after you save words on different days.</p>`;
+
+  app.innerHTML = `
+    <div class="screen-header">
+      <button class="btn btn-ghost" id="back">← Back</button>
+      <h1>Look back</h1>
+    </div>
+    <div class="content">
+      <div class="section">
+        <ul class="history-list">${items}</ul>
+      </div>
+    </div>
+  `;
+
+  document.getElementById("back").onclick = () => {
+    view = "home";
+    render();
+  };
+}
+
+// ---------- Edit Habits ----------
+
+function renderEditHabits() {
+  app.innerHTML = `
+    <div class="screen-header">
+      <button class="btn btn-ghost" id="back">← Back</button>
+      <h1>Edit habit stack</h1>
+    </div>
+    <div class="content">
+      <div class="section">
+        <ul class="habit-list" id="edit-list">
+          ${state.habits.map((label, i) => `
+            <li>
+              <span class="label" style="flex:1">${escape(label)}</span>
+              <button class="del-btn" data-i="${i}">Remove</button>
+            </li>
+          `).join("")}
+        </ul>
+
+        <div class="habit-actions">
+          <input type="text" id="new-habit" placeholder="New habit…" />
+          <button class="btn" id="add-habit">Add</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById("back").onclick = () => {
+    view = "home";
+    render();
+  };
+
+  document.querySelectorAll(".del-btn").forEach(btn => {
+    btn.onclick = async () => {
+      const i = Number(btn.dataset.i);
+      state.habits.splice(i, 1);
+      // Clean checked map
+      const newChecked = {};
+      state.habits.forEach((_, idx) => {
+        if (state.checked[idx >= i ? idx + 1 : idx]) newChecked[idx] = true;
+      });
+      state.checked = newChecked;
+      await save();
+      renderEditHabits();
+    };
+  });
+
+  document.getElementById("add-habit").onclick = async () => {
+    const input = document.getElementById("new-habit");
+    const val = input.value.trim();
+    if (!val) return;
+    state.habits.push(val);
+    await save();
+    input.value = "";
+    renderEditHabits();
+  };
+}
+
+// ---------- Timer helpers ----------
 
 function formatTime(sec) {
   const m = Math.floor(sec / 60);
@@ -203,7 +335,8 @@ function toggleTimer() {
   } else {
     if (timerSeconds <= 0) timerSeconds = 5 * 60;
     timerRunning = true;
-    document.getElementById("timer-toggle").textContent = "Pause";
+    const btn = document.getElementById("timer-toggle");
+    if (btn) btn.textContent = "Pause";
     timerInterval = setInterval(() => {
       timerSeconds--;
       updateTimerDisplay();
@@ -221,6 +354,12 @@ function stopTimer() {
   timerInterval = null;
   const btn = document.getElementById("timer-toggle");
   if (btn) btn.textContent = "Start";
+}
+
+function formatDisplayDate(iso) {
+  const [y, m, d] = iso.split("-");
+  const date = new Date(Number(y), Number(m) - 1, Number(d));
+  return date.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric", year: "numeric" });
 }
 
 function escape(str) {
