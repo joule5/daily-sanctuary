@@ -1,0 +1,279 @@
+:root {
+  --bg: #0c1220;
+  --panel: #141a28;
+  --border: #252d3d;
+  --text: #e8ecf4;
+  --muted: #8b95a8;
+  --accent: #7c9cff;
+  --ok: #6bcf9b;
+  --radius: 16px;
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  line-height: 1.5;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  min-height: 100dvh;
+}
+
+#app {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 0 0 3rem;
+  min-height: 100dvh;
+}
+
+.loading {
+  text-align: center;
+  color: var(--muted);
+  padding: 4rem 1rem;
+}
+
+/* ----- Scene ----- */
+.scene {
+  position: relative;
+  height: 180px;
+  overflow: hidden;
+  border-radius: 0 0 var(--radius) var(--radius);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 1.25rem;
+}
+
+.scene-name {
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  margin-bottom: 0.15rem;
+}
+
+.scene-elements {
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
+
+/* ----- Main content ----- */
+.content {
+  padding: 1.25rem 1.25rem 0;
+}
+
+.quote {
+  font-size: 1.15rem;
+  font-weight: 500;
+  line-height: 1.45;
+  margin: 0 0 1.5rem;
+  padding: 0.25rem 0;
+}
+
+.section {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.1rem 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.section-title {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  margin: 0 0 0.75rem;
+}
+
+/* ----- Meditation ----- */
+.timer-display {
+  font-size: 2.4rem;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  margin: 0.5rem 0 1rem;
+  font-weight: 300;
+}
+
+.timer-controls {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.timer-controls button {
+  min-width: 70px;
+}
+
+/* ----- Checkboxes ----- */
+.check-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.check-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.45rem 0;
+  cursor: pointer;
+}
+
+.check-list input {
+  width: 1.15rem;
+  height: 1.15rem;
+  accent-color: var(--ok);
+}
+
+.check-list label {
+  flex: 1;
+  cursor: pointer;
+  user-select: none;
+}
+
+.check-list .done {
+  text-decoration: line-through;
+  color: var(--muted);
+}
+
+/* ----- Reflection ----- */
+textarea {
+  width: 100%;
+  min-height: 90px;
+  padding: 0.75rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: #0e1420;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.95rem;
+  resize: vertical;
+}
+
+textarea:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+/* ----- AI menu ----- */
+.ai-dropdown {
+  position: relative;
+}
+
+.ai-toggle {
+  width: 100%;
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ai-menu {
+  display: none;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 6px);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  z-index: 20;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+}
+
+.ai-menu.open {
+  display: block;
+}
+
+.ai-menu a {
+  display: block;
+  padding: 0.85rem 1.1rem;
+  color: var(--text);
+  text-decoration: none;
+  border-bottom: 1px solid var(--border);
+}
+
+.ai-menu a:last-child {
+  border-bottom: none;
+}
+
+.ai-menu a:active {
+  background: #1c2433;
+}
+
+.ai-menu .note {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-top: 0.15rem;
+}
+
+.ai-warning {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-top: 0.6rem;
+  line-height: 1.4;
+}
+
+/* ----- Buttons ----- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.7rem 1.1rem;
+  border-radius: 10px;
+  border: none;
+  font-size: 0.95rem;
+  font-weight: 550;
+  font-family: inherit;
+  cursor: pointer;
+  background: var(--accent);
+  color: #fff;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+
+.btn-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.btn-row .btn {
+  flex: 1;
+  min-width: 90px;
+}
+
+/* ----- Footer ----- */
+.footer {
+  text-align: center;
+  padding: 1.5rem 1.25rem 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.footer button {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 0.8rem;
+  text-decoration: underline;
+  cursor: pointer;
+  font-family: inherit;
+}
