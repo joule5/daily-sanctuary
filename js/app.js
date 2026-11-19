@@ -1,10 +1,10 @@
 /**
- * Daily Sanctuary — improved version
- * Habit stack, Look Back, stronger scenes, expanded quotes.
+ * Daily Sanctuary
+ * No scenes. Theme + dim controls. Habit stack. Look back.
  */
 
 import * as db from "./db.js";
-import { SCENES, QUOTES, AI_LINKS, DEFAULT_HABITS } from "../data/content.js";
+import { QUOTES, AI_LINKS, DEFAULT_HABITS, THEMES } from "../data/content.js";
 
 const STATE_KEY = "state";
 
@@ -12,11 +12,13 @@ let state = {
   habits: [...DEFAULT_HABITS],
   checked: {},
   reflection: "",
-  history: [],       // { date, text }
-  lastDate: null
+  history: [],
+  lastDate: null,
+  themeId: "default",
+  dim: false
 };
 
-let view = "home";   // "home" | "history" | "edit-habits"
+let view = "home";
 let timerSeconds = 0;
 let timerInterval = null;
 let timerRunning = false;
@@ -29,13 +31,11 @@ async function load() {
 
   const today = localDate();
   if (state.lastDate !== today) {
-    // New day: save yesterday's reflection into history if it exists, then reset
     if (state.lastDate && state.reflection.trim()) {
       state.history.unshift({
         date: state.lastDate,
         text: state.reflection.trim()
       });
-      // Keep last 90 days
       if (state.history.length > 90) state.history = state.history.slice(0, 90);
     }
     state.checked = {};
@@ -43,6 +43,8 @@ async function load() {
     state.lastDate = today;
     await save();
   }
+
+  applyTheme();
   render();
 }
 
@@ -62,6 +64,14 @@ function dayIndex(len) {
   return hash % len;
 }
 
+function applyTheme() {
+  const theme = THEMES.find(t => t.id === state.themeId) || THEMES[0];
+  document.documentElement.style.setProperty("--bg", theme.bg);
+  document.documentElement.style.setProperty("--panel", theme.panel);
+  document.documentElement.style.setProperty("--accent", theme.accent);
+  document.body.classList.toggle("dim", state.dim);
+}
+
 function render() {
   if (view === "history") return renderHistory();
   if (view === "edit-habits") return renderEditHabits();
@@ -69,78 +79,82 @@ function render() {
 }
 
 function renderHome() {
-  const scene = SCENES[dayIndex(SCENES.length)];
   const quote = QUOTES[dayIndex(QUOTES.length)];
 
   app.innerHTML = `
-    <div class="scene" style="background:${scene.gradient}">
-      <div class="scene-name">${escape(scene.name)}</div>
-      <div class="scene-elements">${escape(scene.elements)}</div>
+    <div class="top-bar">
+      <h1>Daily Sanctuary</h1>
+      <div class="theme-controls">
+        <select id="theme-select" aria-label="Color scheme">
+          ${THEMES.map(t => `
+            <option value="${t.id}" ${state.themeId === t.id ? "selected" : ""}>${escape(t.name)}</option>
+          `).join("")}
+        </select>
+        <button class="dim-btn" id="dim-toggle">${state.dim ? "Undim" : "Dim"}</button>
+      </div>
     </div>
 
-    <div class="content">
-      <p class="quote">“${escape(quote.text)}”</p>
-      ${quote.author ? `<p class="quote-author">— ${escape(quote.author)}</p>` : `<p class="quote-author" style="margin-bottom:1.4rem"></p>`}
+    <p class="quote">“${escape(quote.text)}”</p>
+    ${quote.author ? `<p class="quote-author">— ${escape(quote.author)}</p>` : `<p class="quote-author"></p>`}
 
-      <!-- Meditation -->
-      <div class="section">
-        <div class="section-title">Meditation</div>
-        <div class="timer-display" id="timer">${formatTime(timerSeconds)}</div>
-        <div class="timer-controls">
-          <button class="btn btn-ghost" data-min="5">5 min</button>
-          <button class="btn btn-ghost" data-min="10">10 min</button>
-          <button class="btn btn-ghost" data-min="15">15 min</button>
-          <button class="btn" id="timer-toggle">${timerRunning ? "Pause" : "Start"}</button>
-        </div>
+    <!-- Meditation -->
+    <div class="section">
+      <div class="section-title">Meditation</div>
+      <div class="timer-display" id="timer">${formatTime(timerSeconds)}</div>
+      <div class="timer-controls">
+        <button class="btn btn-ghost" data-min="5">5 min</button>
+        <button class="btn btn-ghost" data-min="10">10 min</button>
+        <button class="btn btn-ghost" data-min="15">15 min</button>
+        <button class="btn" id="timer-toggle">${timerRunning ? "Pause" : "Start"}</button>
       </div>
+    </div>
 
-      <!-- Habit stack -->
-      <div class="section">
-        <div class="section-title">
-          <span>Habit stack</span>
-          <button class="btn btn-ghost" id="edit-habits" style="padding:0.25rem 0.6rem;font-size:0.8rem">Edit</button>
-        </div>
-        <ul class="habit-list" id="habits">
-          ${state.habits.map((label, i) => `
-            <li>
-              <input type="checkbox" id="h${i}" ${state.checked[i] ? "checked" : ""} />
-              <label class="label ${state.checked[i] ? "done" : ""}" for="h${i}">${escape(label)}</label>
-            </li>
+    <!-- Habit stack -->
+    <div class="section">
+      <div class="section-title">
+        <span>Habit stack</span>
+        <button class="btn btn-ghost" id="edit-habits" style="padding:0.25rem 0.6rem;font-size:0.8rem">Edit</button>
+      </div>
+      <ul class="habit-list">
+        ${state.habits.map((label, i) => `
+          <li>
+            <input type="checkbox" id="h${i}" ${state.checked[i] ? "checked" : ""} />
+            <label class="label ${state.checked[i] ? "done" : ""}" for="h${i}">${escape(label)}</label>
+          </li>
+        `).join("")}
+      </ul>
+    </div>
+
+    <!-- Reflection -->
+    <div class="section">
+      <div class="section-title">
+        <span>A few words (only you see this)</span>
+        <button class="btn btn-ghost" id="look-back" style="padding:0.25rem 0.6rem;font-size:0.8rem">Look back</button>
+      </div>
+      <textarea id="reflection" placeholder="What are you carrying, learning, or noticing…">${escape(state.reflection)}</textarea>
+      <div class="btn-row">
+        <button class="btn btn-ghost" id="save-reflection">Save</button>
+      </div>
+    </div>
+
+    <!-- Ask an AI -->
+    <div class="section">
+      <div class="section-title">Ask an AI</div>
+      <div class="ai-dropdown">
+        <button class="btn btn-ghost ai-toggle" id="ai-toggle">
+          <span>Choose an AI…</span>
+          <span>▾</span>
+        </button>
+        <div class="ai-menu" id="ai-menu">
+          ${AI_LINKS.map(ai => `
+            <a href="${ai.url}" target="_blank" rel="noopener noreferrer">
+              ${escape(ai.name)}
+              <span class="note">${escape(ai.note)}</span>
+            </a>
           `).join("")}
-        </ul>
-      </div>
-
-      <!-- Reflection -->
-      <div class="section">
-        <div class="section-title">
-          <span>A few words (only you see this)</span>
-          <button class="btn btn-ghost" id="look-back" style="padding:0.25rem 0.6rem;font-size:0.8rem">Look back</button>
-        </div>
-        <textarea id="reflection" placeholder="What are you carrying, learning, or noticing…">${escape(state.reflection)}</textarea>
-        <div class="btn-row">
-          <button class="btn btn-ghost" id="save-reflection">Save</button>
         </div>
       </div>
-
-      <!-- Ask an AI -->
-      <div class="section">
-        <div class="section-title">Ask an AI</div>
-        <div class="ai-dropdown">
-          <button class="btn btn-ghost ai-toggle" id="ai-toggle">
-            <span>Choose an AI…</span>
-            <span>▾</span>
-          </button>
-          <div class="ai-menu" id="ai-menu">
-            ${AI_LINKS.map(ai => `
-              <a href="${ai.url}" target="_blank" rel="noopener noreferrer">
-                ${escape(ai.name)}
-                <span class="note">${escape(ai.note)}</span>
-              </a>
-            `).join("")}
-          </div>
-        </div>
-        <p class="ai-warning">These links leave this private local space and open another service.</p>
-      </div>
+      <p class="ai-warning">These links leave this private local space and open another service.</p>
     </div>
 
     <div class="footer">
@@ -153,6 +167,20 @@ function renderHome() {
 }
 
 function bindHomeEvents() {
+  // Theme
+  document.getElementById("theme-select").onchange = async (e) => {
+    state.themeId = e.target.value;
+    applyTheme();
+    await save();
+  };
+
+  document.getElementById("dim-toggle").onclick = async () => {
+    state.dim = !state.dim;
+    applyTheme();
+    await save();
+    render(); // refresh button label
+  };
+
   // Timer
   document.querySelectorAll("[data-min]").forEach(btn => {
     btn.onclick = () => {
@@ -210,11 +238,14 @@ function bindHomeEvents() {
       checked: {},
       reflection: "",
       history: [],
-      lastDate: null
+      lastDate: null,
+      themeId: "default",
+      dim: false
     };
     stopTimer();
     timerSeconds = 0;
     await db.clearAll();
+    applyTheme();
     render();
   };
 }
@@ -227,8 +258,6 @@ function closeAiMenu(e) {
     menu.classList.remove("open");
   }
 }
-
-// ---------- Look Back ----------
 
 function renderHistory() {
   const items = state.history.length
@@ -245,10 +274,8 @@ function renderHistory() {
       <button class="btn btn-ghost" id="back">← Back</button>
       <h1>Look back</h1>
     </div>
-    <div class="content">
-      <div class="section">
-        <ul class="history-list">${items}</ul>
-      </div>
+    <div class="section">
+      <ul class="history-list">${items}</ul>
     </div>
   `;
 
@@ -258,29 +285,24 @@ function renderHistory() {
   };
 }
 
-// ---------- Edit Habits ----------
-
 function renderEditHabits() {
   app.innerHTML = `
     <div class="screen-header">
       <button class="btn btn-ghost" id="back">← Back</button>
       <h1>Edit habit stack</h1>
     </div>
-    <div class="content">
-      <div class="section">
-        <ul class="habit-list" id="edit-list">
-          ${state.habits.map((label, i) => `
-            <li>
-              <span class="label" style="flex:1">${escape(label)}</span>
-              <button class="del-btn" data-i="${i}">Remove</button>
-            </li>
-          `).join("")}
-        </ul>
-
-        <div class="habit-actions">
-          <input type="text" id="new-habit" placeholder="New habit…" />
-          <button class="btn" id="add-habit">Add</button>
-        </div>
+    <div class="section">
+      <ul class="habit-list" id="edit-list">
+        ${state.habits.map((label, i) => `
+          <li>
+            <span class="label" style="flex:1">${escape(label)}</span>
+            <button class="del-btn" data-i="${i}">Remove</button>
+          </li>
+        `).join("")}
+      </ul>
+      <div class="habit-actions">
+        <input type="text" id="new-habit" placeholder="New habit…" />
+        <button class="btn" id="add-habit">Add</button>
       </div>
     </div>
   `;
@@ -294,7 +316,6 @@ function renderEditHabits() {
     btn.onclick = async () => {
       const i = Number(btn.dataset.i);
       state.habits.splice(i, 1);
-      // Clean checked map
       const newChecked = {};
       state.habits.forEach((_, idx) => {
         if (state.checked[idx >= i ? idx + 1 : idx]) newChecked[idx] = true;
@@ -315,8 +336,6 @@ function renderEditHabits() {
     renderEditHabits();
   };
 }
-
-// ---------- Timer helpers ----------
 
 function formatTime(sec) {
   const m = Math.floor(sec / 60);
@@ -370,5 +389,4 @@ function escape(str) {
     .replace(/"/g, "&quot;");
 }
 
-// ---------- Start ----------
 load();

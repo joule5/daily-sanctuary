@@ -21,6 +21,7 @@ html, body {
   font-family: var(--font);
   line-height: 1.5;
   -webkit-tap-highlight-color: transparent;
+  transition: background 0.25s ease, color 0.25s ease;
 }
 
 body { min-height: 100dvh; }
@@ -28,7 +29,7 @@ body { min-height: 100dvh; }
 #app {
   max-width: 520px;
   margin: 0 auto;
-  padding: 0 0 3rem;
+  padding: 1.25rem 1.25rem 3rem;
   min-height: 100dvh;
 }
 
@@ -38,48 +39,49 @@ body { min-height: 100dvh; }
   padding: 4rem 1rem;
 }
 
-/* ----- Scene ----- */
-.scene {
-  position: relative;
-  height: 200px;
-  overflow: hidden;
+/* ----- Header / theme controls ----- */
+.top-bar {
   display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  padding: 1.4rem 1.25rem;
-  color: #fff;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+  gap: 0.75rem;
 }
 
-.scene::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 60%);
-  pointer-events: none;
+.top-bar h1 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
 }
 
-.scene-name {
-  position: relative;
-  z-index: 1;
-  font-size: 0.75rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  opacity: 0.75;
-  margin-bottom: 0.2rem;
+.theme-controls {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
 }
 
-.scene-elements {
-  position: relative;
-  z-index: 1;
-  font-size: 1rem;
-  opacity: 0.95;
+.theme-controls select {
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.8rem;
+  font-family: inherit;
 }
 
-/* ----- Content ----- */
-.content {
-  padding: 1.25rem 1.25rem 0;
+.dim-btn {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  border-radius: 8px;
+  padding: 0.35rem 0.6rem;
+  font-size: 0.8rem;
+  font-family: inherit;
+  cursor: pointer;
 }
 
+/* ----- Quote ----- */
 .quote {
   font-size: 1.15rem;
   font-weight: 500;
@@ -90,15 +92,17 @@ body { min-height: 100dvh; }
 .quote-author {
   font-size: 0.85rem;
   color: var(--muted);
-  margin: 0 0 1.4rem;
+  margin: 0 0 1.5rem;
 }
 
+/* ----- Sections ----- */
 .section {
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 1.1rem 1.2rem;
   margin-bottom: 1rem;
+  transition: background 0.25s ease, border-color 0.25s ease;
 }
 
 .section-title {
@@ -134,7 +138,7 @@ body { min-height: 100dvh; }
 .habit-list {
   list-style: none;
   padding: 0;
-  margin: 0 0 0.75rem;
+  margin: 0 0 0.5rem;
 }
 
 .habit-list li {
@@ -162,7 +166,6 @@ body { min-height: 100dvh; }
   color: var(--muted);
 }
 
-.habit-list .edit-btn,
 .habit-list .del-btn {
   background: none;
   border: none;
@@ -176,7 +179,7 @@ body { min-height: 100dvh; }
 .habit-actions {
   display: flex;
   gap: 0.5rem;
-  margin-top: 0.5rem;
+  margin-top: 0.6rem;
 }
 
 .habit-actions input {
@@ -184,7 +187,7 @@ body { min-height: 100dvh; }
   padding: 0.55rem 0.7rem;
   border-radius: 8px;
   border: 1px solid var(--border);
-  background: #0e1420;
+  background: color-mix(in srgb, var(--bg) 80%, black);
   color: var(--text);
   font-size: 0.9rem;
   font-family: inherit;
@@ -197,14 +200,14 @@ textarea {
   padding: 0.75rem;
   border-radius: 10px;
   border: 1px solid var(--border);
-  background: #0e1420;
+  background: color-mix(in srgb, var(--bg) 80%, black);
   color: var(--text);
   font-family: inherit;
   font-size: 0.95rem;
   resize: vertical;
 }
 
-textarea:focus, input:focus {
+textarea:focus, input:focus, select:focus {
   outline: 2px solid var(--accent);
   outline-offset: 1px;
 }
@@ -213,7 +216,7 @@ textarea:focus, input:focus {
   list-style: none;
   padding: 0;
   margin: 0;
-  max-height: 320px;
+  max-height: 340px;
   overflow-y: auto;
 }
 
@@ -276,7 +279,7 @@ textarea:focus, input:focus {
 }
 
 .ai-menu a:last-child { border-bottom: none; }
-.ai-menu a:active { background: #1c2433; }
+.ai-menu a:active { background: color-mix(in srgb, var(--panel) 80%, white); }
 
 .ai-menu .note {
   display: block;
@@ -326,7 +329,7 @@ textarea:focus, input:focus {
 /* ----- Footer ----- */
 .footer {
   text-align: center;
-  padding: 1.5rem 1.25rem 0;
+  padding: 1.5rem 0 0;
   font-size: 0.8rem;
   color: var(--muted);
 }
@@ -347,11 +350,16 @@ textarea:focus, input:focus {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 1rem 1.25rem 0.5rem;
+  margin-bottom: 1rem;
 }
 
 .screen-header h1 {
   font-size: 1.2rem;
   margin: 0;
   font-weight: 600;
+}
+
+/* Dim mode */
+body.dim {
+  filter: brightness(0.72);
 }

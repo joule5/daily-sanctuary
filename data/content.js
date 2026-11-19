@@ -1,46 +1,7 @@
 /**
  * Expandable content.
- * To add more scenes or quotes later, just append to the arrays.
+ * Add more quotes or AIs by appending to the arrays.
  */
-
-export const SCENES = [
-  {
-    id: "forest-morning",
-    name: "Forest Morning",
-    gradient: "linear-gradient(165deg, #1e3a2f 0%, #0f241c 45%, #0a1812 100%)",
-    elements: "tall pines · soft light · a quiet path"
-  },
-  {
-    id: "beach-dusk",
-    name: "Beach at Dusk",
-    gradient: "linear-gradient(165deg, #2d1f3d 0%, #1a1428 50%, #100c18 100%)",
-    elements: "low tide · distant lights · one footprint"
-  },
-  {
-    id: "city-park",
-    name: "City Park",
-    gradient: "linear-gradient(165deg, #1e2c30 0%, #141e22 50%, #0c1418 100%)",
-    elements: "old trees · a bench · one piece of litter someone missed"
-  },
-  {
-    id: "mountain-clear",
-    name: "Mountain Clear",
-    gradient: "linear-gradient(165deg, #1c2838 0%, #121a26 50%, #0a1018 100%)",
-    elements: "cold air · long view · a single trail marker"
-  },
-  {
-    id: "lakeside",
-    name: "Lakeside",
-    gradient: "linear-gradient(165deg, #1a2c36 0%, #111e28 50%, #0a141c 100%)",
-    elements: "still water · reeds · a distant dock"
-  },
-  {
-    id: "desert-evening",
-    name: "Desert Evening",
-    gradient: "linear-gradient(165deg, #2e2218 0%, #1c1610 50%, #120e0a 100%)",
-    elements: "long shadows · quiet sand · one distant road"
-  }
-];
 
 export const QUOTES = [
   // Original
@@ -60,16 +21,13 @@ export const QUOTES = [
   { text: "The secret of getting ahead is getting started.", author: "Mark Twain" },
   { text: "It does not matter how slowly you go as long as you do not stop.", author: "Confucius" },
   { text: "What you get by achieving your goals is not as important as what you become by achieving your goals.", author: "Zig Ziglar" },
-  { text: "The only way to do great work is to love what you do.", author: "Steve Jobs" },
   { text: "Do what you can, with what you have, where you are.", author: "Theodore Roosevelt" },
   { text: "I am not a product of my circumstances. I am a product of my decisions.", author: "Stephen Covey" },
   { text: "The future depends on what you do today.", author: "Mahatma Gandhi" },
-  { text: "You miss 100% of the shots you don’t take.", author: "Wayne Gretzky" },
   { text: "It always seems impossible until it’s done.", author: "Nelson Mandela" },
   { text: "Start where you are. Use what you have. Do what you can.", author: "Arthur Ashe" },
   { text: "The best time to plant a tree was 20 years ago. The second best time is now.", author: "Chinese proverb" },
   { text: "Small daily improvements over time lead to stunning results.", author: "Robin Sharma" },
-  { text: "Discipline is choosing between what you want now and what you want most.", author: "Abraham Lincoln (attributed)" },
   { text: "You do not rise to the level of your goals. You fall to the level of your systems.", author: "James Clear" }
 ];
 
@@ -87,4 +45,12 @@ export const DEFAULT_HABITS = [
   "Moved my body a little",
   "One small learning step",
   "Looked at the sky or a window"
+];
+
+export const THEMES = [
+  { id: "default", name: "Midnight", bg: "#0c1220", panel: "#141a28", accent: "#7c9cff" },
+  { id: "deep", name: "Deep Black", bg: "#050505", panel: "#111111", accent: "#8b9cff" },
+  { id: "forest", name: "Forest", bg: "#0a1410", panel: "#122018", accent: "#6bcf9b" },
+  { id: "slate", name: "Slate", bg: "#12151c", panel: "#1c212b", accent: "#9aa8c7" },
+  { id: "warm", name: "Warm Ember", bg: "#140f0c", panel: "#1e1814", accent: "#d4a574" }
 ];
